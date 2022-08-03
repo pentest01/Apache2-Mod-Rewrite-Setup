@@ -1,4 +1,4 @@
-#!/bin/python
+#!/bin/python3
 
 import sys,os,argparse,subprocess,re #native
 
@@ -70,7 +70,7 @@ class MyParser(argparse.ArgumentParser):
             Setting up Mobile Redirection, IR Blacklisting, and IP Blacklisting:
                 python apache_redirector_setup.py --ip_blacklist="<IP ADDRESS>" --ip_blacklist="<IP ADDRESS>" --mobile_url="<Mobile Payload>"  --mobile_mode=proxy --allow_url="<Teamserver Address>" --allow_mode="proxy"
         '''
-        print help1
+        print(help1)
         exit(-1)
 
 redirection_options = {}
@@ -86,14 +86,14 @@ ir_string = 'wget;curl;HTTrack;crawl;google;bot;b\-o\-t;spider;baidu;python'
 def htaccessCheck(silent,server_root):
     if os.path.isfile((server_root + ".htaccess")):
         if silent:
-            print red + "An .htaccess file was found in the "+ server_root +" webroot!  This file will be overwritten with a new ruleset with this tool if you continue!" + colorEnd
-            prompt = raw_input(yellow + "Would you like to backup this file before continuing?(Y/N):" + colorEnd + " ")
+            print(red + "An .htaccess file was found in the "+ server_root +" webroot!  This file will be overwritten with a new ruleset with this tool if you continue!" + colorEnd)
+            prompt = input(yellow + "Would you like to backup this file before continuing?(Y/N):" + colorEnd + " ")
             if (prompt.lower() == ("y")) or (prompt.lower() == ("yes")):
                 backupConfig(silent,server_root)
             elif (prompt.lower() == ("n")) or (prompt.lower() == ("no")):
-                print yellow + ".htaccess file removed without saving a backup" + colorEnd
+                print(yellow + ".htaccess file removed without saving a backup" + colorEnd)
             else:
-                print red + "You didn't enter Y or N, so I don't know what you want!  I am going to exit now feel free to try again" + colorEnd
+                print(red + "You didn't enter Y or N, so I don't know what you want!  I am going to exit now feel free to try again" + colorEnd)
                 sys.exit()
         os.remove(server_root + ".htaccess")
 
@@ -114,7 +114,7 @@ def checkSetup(silent,server_root):
         server_root="/var/www/"
     try:
         if silent:
-            print green + "Checking if Apache Server is Configured Correctly" + colorEnd
+            print(green + "Checking if Apache Server is Configured Correctly" + colorEnd)
         setup = False
         config = open("/etc/apache2/apache2.conf", "r")
         apache2config = config.readlines()
@@ -129,18 +129,18 @@ def checkSetup(silent,server_root):
         if "AllowOverride All" in apache2config[configEditLineNumber + 2]:
             setup = True
             if silent:
-                print green + "Mod_rewrite is enabled for the "+ server_root +" webroot" + colorEnd
-                print green + "Apache Server Configured Correctly!" + colorEnd +"\n" 
+                print(green + "Mod_rewrite is enabled for the "+ server_root +" webroot" + colorEnd)
+                print(green + "Apache Server Configured Correctly!" + colorEnd +"\n") 
             return setup
         else:
             if silent:
-                print yellow + "Mod_rewrite is not enabled for the "+ server_root +" webroot" + colorEnd
-                print yellow + "Configuring the "+ server_root +" for Apache Mod-Rewrite!"
+                print(yellow + "Mod_rewrite is not enabled for the "+ server_root +" webroot" + colorEnd)
+                print(yellow + "Configuring the "+ server_root +" for Apache Mod-Rewrite!")
             setup = False
             return setup
     except IOError:
         if silent:
-            print yellow + "Apache2 is not installed,  Installing Apache2 and configuring Mod-Rewrite Now" + colorEnd
+            print(yellow + "Apache2 is not installed,  Installing Apache2 and configuring Mod-Rewrite Now" + colorEnd)
         setup = False
         return setup
 
@@ -148,11 +148,11 @@ def backupConfig(silent,server_root):
     if os.path.isfile("/etc/apache2/apache2.conf"):
         backupFile("/etc/apache2/apache2.conf")
         if silent:
-            print green + "Apache2 Configuration backed up" + colorEnd
+            print(green + "Apache2 Configuration backed up" + colorEnd)
     if os.path.isfile((server_root + ".htaccess")):
         backupFile((server_root + ".htaccess"))
         if silent:
-            print green + ".htaccess file located at " + (server_root + ".htaccess") + " has been saved at " + (server_root + "html/.htaccess.bak") + colorEnd
+            print(green + ".htaccess file located at " + (server_root + ".htaccess") + " has been saved at " + (server_root + "html/.htaccess.bak") + colorEnd)
 
 def firstTimeSetup(silent,server_root):
     if server_root == "/var/www/html/":
@@ -180,12 +180,12 @@ def firstTimeSetup(silent,server_root):
         apache2config.write(line)
     apache2config.close()
     if silent:
-        print yellow + "Restarting Apache to Enable New Configuration" + colorEnd
+        print(yellow + "Restarting Apache to Enable New Configuration" + colorEnd)
     subprocess.call(["service","apache2","restart"])
     if silent:
         subprocess.call(["service","apache2","status"])
     if silent:
-        print green + "Configuration Complete!" + colorEnd
+        print(green + "Configuration Complete!" + colorEnd)
 
 def mobile_rule(mobile_URL,mobile_mode,server_root):
 
@@ -544,15 +544,15 @@ def allowClause(allow_url,allow_mode,server_root):
         ruleFile.write(rule)
         ruleFile.close()
     else:
-        print "No rules to allow"
+        print("No rules to allow")
 
 def readRules(silent,server_root):
     if silent:
-        print (green + ("Here is a print out of the rules written to " + (server_root + ".htaccess") + colorEnd))
+        print((green + ("Here is a print out of the rules written to " + (server_root + ".htaccess") + colorEnd)))
         rules = open((server_root + ".htaccess"),"r")
         for rule in rules:
-            print rule.strip("\n")
-        print "\n\n"
+            print(rule.strip("\n"))
+        print("\n\n")
 def processing(redirection_options):   
     htaccessCheck(redirection_options['silent'],redirection_options['server_root'])
     setup = checkSetup(redirection_options['silent'],redirection_options['server_root'])
@@ -566,45 +566,45 @@ def processing(redirection_options):
             if (redirection_options['block_url'] != None) and (redirection_options['block_mode'] != None) and (redirection_options['allow_url'] != None) and (redirection_options['allow_mode'] != None):
                 Staging(redirection_options['malleable'],redirection_options['block_url'],redirection_options['block_mode'], redirection_options['allow_url'],redirection_options['allow_mode'],redirection_options['server_root'], redirection_options['staging_uri'])
             else:
-                print red + "In order to setup malleable C2 with staging support use the following flags, --malleable --staging_uri --block_url --block_mode --allow_url, --allow_mode" + colorEnd
+                print(red + "In order to setup malleable C2 with staging support use the following flags, --malleable --staging_uri --block_url --block_mode --allow_url, --allow_mode" + colorEnd)
         else:
-            print red + "In order to use malleable C2, --malleable --block_url and --block_mode must be used" + colorEnd
+            print(red + "In order to use malleable C2, --malleable --block_url and --block_mode must be used" + colorEnd)
     
     if redirection_options['ir'] != None:
         if (redirection_options['block_url'] != None) and (redirection_options['block_mode'] != None):
             irSetup(redirection_options['block_url'],redirection_options['block_mode'],redirection_options['server_root'])
         else:
-            print red + "In order to set IR Blocking, --block_url and --block_mode must be used" + colorEnd
+            print(red + "In order to set IR Blocking, --block_url and --block_mode must be used" + colorEnd)
 
     if redirection_options['ip_blacklist'] != None:
         if (redirection_options['block_url'] != None) and (redirection_options['block_mode'] != None):
             ipBlacklisting(redirection_options['ip_blacklist'],redirection_options['block_url'],redirection_options['block_mode'],redirection_options['server_root'])
         else:
-            print red + "In order to set IP Blocking, --block_url, --block_mode, and --ip_blacklist must be used" + colorEnd
+            print(red + "In order to set IP Blocking, --block_url, --block_mode, and --ip_blacklist must be used" + colorEnd)
 
     if redirection_options['block_ua']!= None:
         if (redirection_options['block_mode'] != None) & (redirection_options['block_url'] != None):
             blockUA(redirection_options['block_ua'],redirection_options['block_url'],redirection_options['block_mode'],redirection_options['server_root'])
         else:
-            print red + "In order to block a specific useragent use, --block_ua, --block_mode and --block_url must be used" + colorEnd
+            print(red + "In order to block a specific useragent use, --block_ua, --block_mode and --block_url must be used" + colorEnd)
     
     if redirection_options['valid_uris']!= None:
         if (redirection_options['block_url'] != None) & (redirection_options['block_mode'] != None):
             validURI(redirection_options['valid_uris'],redirection_options['block_url'],redirection_options['block_mode'],redirection_options['server_root'])
         else:
-            print red + "In order to set URI whitelisting use, --valid_uris, --block_url and --block_mode must be used" + colorEnd
+            print(red + "In order to set URI whitelisting use, --valid_uris, --block_url and --block_mode must be used" + colorEnd)
 
     if redirection_options['mobile_url']!= None:
         if (redirection_options['mobile_mode'] != None):
             mobile_rule(redirection_options['mobile_url'],redirection_options['mobile_mode'],redirection_options['server_root'])
         else:
-            print red + "In order to set mobile redirection use, --mobile_url, and --mobile_mode must be used" + colorEnd
+            print(red + "In order to set mobile redirection use, --mobile_url, and --mobile_mode must be used" + colorEnd)
 
     if redirection_options['allow_url']!= None:
         if redirection_options['allow_mode'] !=None:
             allowClause(redirection_options['allow_url'],redirection_options['allow_mode'],redirection_options['server_root'])
         else:
-            print red + "In order to set an allow rule use,  --allow_url, and --allow_mode" + colorEnd
+            print(red + "In order to set an allow rule use,  --allow_url, and --allow_mode" + colorEnd)
     
     if os.path.isfile((redirection_options['server_root'] + ".htaccess")):
         readRules(redirection_options['silent'],redirection_options['server_root'])
